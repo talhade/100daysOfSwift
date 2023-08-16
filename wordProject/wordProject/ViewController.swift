@@ -85,7 +85,7 @@ class ViewController: UITableViewController {
     }
     
     func isPossible(word:String) -> Bool{
-        guard var temp = title?.lowercased() else { return false}
+        guard var temp = title?.lowercased() else { return false }
         
         if word.count < 3 || word == temp{
             return false
