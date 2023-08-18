@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="pl7-ak-kTG">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="hangmanGame" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter a letter" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="UHM-jv-jmY">
+                                <rect key="frame" x="141" y="466" width="111" height="34"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="UHM-jv-jmY" secondAttribute="height" multiplier="111:34" id="QV6-aR-gym"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Lui-hu-FAg">
+                                <rect key="frame" x="157.66666666666666" y="508" width="78" height="35"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="Lui-hu-FAg" secondAttribute="height" multiplier="78:35" id="REw-6K-bi4"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Submit"/>
+                                <connections>
+                                    <action selector="submitTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="lDx-JI-v0d"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="word goes here" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OqX-aJ-CT5">
+                                <rect key="frame" x="67" y="194" width="263" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="OqX-aJ-CT5" secondAttribute="trailing" constant="63" id="0aQ-nl-wam"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="Lui-hu-FAg" secondAttribute="bottom" constant="275" id="4hc-vh-XKg"/>
+                            <constraint firstItem="OqX-aJ-CT5" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="67" id="ECd-g3-kfJ"/>
+                            <constraint firstItem="UHM-jv-jmY" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="141" id="QEm-6v-eyo"/>
+                            <constraint firstItem="UHM-jv-jmY" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="XCi-0K-Fnf"/>
+                            <constraint firstItem="Lui-hu-FAg" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="Yv7-0V-7Ha"/>
+                            <constraint firstItem="OqX-aJ-CT5" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="91" id="dmb-ZY-WXg"/>
+                            <constraint firstItem="Lui-hu-FAg" firstAttribute="firstBaseline" relation="greaterThanOrEqual" secondItem="UHM-jv-jmY" secondAttribute="baseline" constant="5" id="t7V-hF-U5p"/>
+                            <constraint firstItem="UHM-jv-jmY" firstAttribute="top" secondItem="OqX-aJ-CT5" secondAttribute="bottom" constant="251" id="vKP-Aw-b32"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="aUz-9p-ya3"/>
+                    <connections>
+                        <outlet property="submitButton" destination="Lui-hu-FAg" id="G08-gd-eEa"/>
+                        <outlet property="textField" destination="UHM-jv-jmY" id="SRq-ks-pd3"/>
+                        <outlet property="wordLabel" destination="OqX-aJ-CT5" id="pY3-0R-3b6"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="910.68702290076328" y="3.5211267605633805"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="ysV-mg-TWC">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="pl7-ak-kTG" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="bOH-Sh-eNr">
+                        <rect key="frame" x="0.0" y="59" width="393" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="Pef-gL-JH8"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Pgk-kx-0lh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-16.030534351145036" y="3.5211267605633805"/>
+        </scene>
+    </scenes>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
