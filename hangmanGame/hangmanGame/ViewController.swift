@@ -28,6 +28,8 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(startGame))
+        
         if let startWordsUrl = Bundle.main.url(forResource: "start", withExtension: "txt"){
             if let startWords = try? String(contentsOf: startWordsUrl){
                 allWords = startWords.components(separatedBy: "\n")
@@ -41,9 +43,11 @@ class ViewController: UIViewController {
         startGame()
     }
     
-    func startGame(){
+    @objc func startGame(){
         chosenWord = allWords.randomElement()!
+        life = 7
         print(chosenWord)
+        usedLetters = []
         prompt = ""
         for letter in chosenWord {
             let strLetter = String(letter)
@@ -54,30 +58,62 @@ class ViewController: UIViewController {
                 prompt += "? "
             }
         }
+        
+        
     }
     
-    
-    
     @IBAction func submitTapped(_ sender: Any) {
-        guard let answer = textField.text?.lowercased() else { return }
-        if answer.count != 1 {
-            print("unknown")
-        }else if !usedLetters.contains(answer){
-            usedLetters.append(answer)
-            prompt = ""
-
-            for letter in chosenWord {
-                let strLetter = String(letter)
-
-                if usedLetters.contains(strLetter) {
-                    prompt += strLetter
-                } else {
-                    prompt += "? "
-                }
-                
+        if prompt.contains("?"){
+            guard let answer = textField.text?.lowercased() else { return }
+            if answer.count != 1 {
+                showAC(title: "OOPS", message: "Enter a valid answer")
             }
             
+            if !usedLetters.contains(answer){
+                usedLetters.append(answer)
+                prompt = ""
+
+                for letter in chosenWord {
+                    let strLetter = String(letter)
+
+                    if usedLetters.contains(strLetter) {
+                        prompt += strLetter
+                    } else {
+                        prompt += "? "
+                    }
+                    
+                }
+                
+            }else{
+                life -= 1
+                print(life)
+                if life == 0{
+                    let ac = UIAlertController(title: "Try Again", message: "You are out of your life. The word was \(chosenWord)", preferredStyle: .alert)
+                    let action = UIAlertAction(title: "OK", style: .default) { alertAction in
+                        self.startGame()
+                    }
+                    ac.addAction(action)
+                    present(ac, animated: true)
+                
+                }
+            }
+            textField.text = ""
+        }else{
+            let ac = UIAlertController(title: "You Won", message: "You succesfully found \(chosenWord).", preferredStyle: .alert)
+            let action = UIAlertAction(title: "OK", style: .default) { alertAction in
+                self.startGame()
+            }
+            ac.addAction(action)
+            present(ac, animated: true)
         }
+        
+    }
+    
+    func showAC(title: String, message: String){
+        let ac = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let action = UIAlertAction(title: "OK", style: .default)
+        ac.addAction(action)
+        present(ac, animated: true)
     }
     
     
