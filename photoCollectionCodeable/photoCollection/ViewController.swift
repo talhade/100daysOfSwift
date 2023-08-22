@@ -16,6 +16,18 @@ class ViewController: UICollectionViewController, UIImagePickerControllerDelegat
         
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addPhoto))
+        
+        let defaults = UserDefaults.standard
+        
+        if let savedPhotos = defaults.object(forKey: "photos") as? Data{
+            let jsonDecoder = JSONDecoder()
+            
+            do{
+                photos = try jsonDecoder.decode([Polaroid].self, from: savedPhotos)
+            }catch{
+                print("Unable to load data")
+            }
+        }
     }
     
     
@@ -39,6 +51,7 @@ class ViewController: UICollectionViewController, UIImagePickerControllerDelegat
         
         let photo = Polaroid(name: "Unknown", image: imageName)
         photos.append(photo)
+        save()
         collectionView.reloadData()
         
         dismiss(animated: true )
@@ -74,12 +87,23 @@ class ViewController: UICollectionViewController, UIImagePickerControllerDelegat
         ac.addAction(UIAlertAction(title: "OK", style: .default) { [weak self, weak ac] action in
             guard let newName = ac?.textFields?[0].text else { return }
             polaroid.name = newName
+            self?.save()
             self?.collectionView.reloadData()
         })
         
         ac.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         present(ac, animated: true)
         
+    }
+    
+    func save(){
+        let jsonEncoder = JSONEncoder()
+        if let savedData = try? jsonEncoder.encode(photos){
+            let defaults = UserDefaults.standard
+            defaults.set(savedData, forKey: "photos")
+        }else{
+            print("Unable to Save")
+        }
     }
 
 

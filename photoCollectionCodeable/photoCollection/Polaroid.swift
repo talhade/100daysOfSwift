@@ -7,7 +7,7 @@
 
 import UIKit
 
-class Polaroid: NSObject {
+class Polaroid: NSObject, Codable {
     var name: String
     var image: String
     
