@@ -24,6 +24,12 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     var selectedTitle = ""
     var selectedTitleID : UUID?
     
+    var anotationTitle = ""
+    var anotationSubTitle = ""
+    var anotationLatitude = Double()
+    var anotationLongitude = Double()
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -41,8 +47,54 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         
         if selectedTitle != ""{
             //fetch from core data
-            let stringUUID = selectedTitleID!.uuidString
-            print("places id is : ", stringUUID)
+            let idString = selectedTitleID!.uuidString
+            
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            let context = appDelegate.persistentContainer.viewContext
+            
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Places")
+            fetchRequest.predicate = NSPredicate(format: "id = %@", idString)
+            fetchRequest.returnsObjectsAsFaults = false
+            
+            do{
+                let results = try context.fetch(fetchRequest)
+                if results.count > 0{
+                    for result in results as! [NSManagedObject]{
+                        if let title = result.value(forKey: "title") as? String{
+                            anotationTitle = title
+                            if let subTitle = result.value(forKey: "subtitle") as? String{
+                                anotationSubTitle = subTitle
+                                if let latitude = result.value(forKey: "latitude") as? Double{
+                                    anotationLatitude = latitude
+                                    if let longitude = result.value(forKey: "longitude") as? Double{
+                                        anotationLongitude = longitude
+                                        
+                                        let anotation = MKPointAnnotation()
+                                        anotation.title = anotationTitle
+                                        anotation.subtitle = anotationSubTitle
+                                        let coordinate = CLLocationCoordinate2D(latitude: anotationLatitude, longitude: anotationLongitude)
+                                        anotation.coordinate = coordinate
+                                        mapView.addAnnotation(anotation)
+                                        nameText.text = anotationTitle
+                                        DescriptionText.text = anotationSubTitle
+                                        
+                                        locationManager.stopUpdatingLocation()
+                                        
+                                        let span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+                                        let region = MKCoordinateRegion(center: coordinate, span: span)
+                                        mapView.setRegion(region, animated: true)
+                                    }
+                                    
+                                }
+                            }
+                        }
+                    }
+                }
+                
+            }catch{
+                print("Error while fetching in ViewController")
+            }
+            
         } else{
             //add new data
         }
@@ -68,12 +120,58 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        let location = CLLocationCoordinate2D(latitude: locations[0].coordinate.latitude,
-                                              longitude: locations[0].coordinate.longitude)
-        let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
-        let region = MKCoordinateRegion(center: location, span: span)
-        mapView.setRegion(region, animated: true)
+        //if içine aldık ki kaydettiğimiz bi yerin konumuna bakarken bo konumu açsın bizim mevcut bulundupumuz konumu değil
+        if selectedTitle == "" {
+            let location = CLLocationCoordinate2D(latitude: locations[0].coordinate.latitude,
+                                                  longitude: locations[0].coordinate.longitude)
+            let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+            let region = MKCoordinateRegion(center: location, span: span)
+            mapView.setRegion(region, animated: true)
+        }
     }
+    
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        if annotation is MKUserLocation {
+            return nil
+        }
+        
+        let reuseId = "myAnnotation"
+        var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? MKMarkerAnnotationView
+        
+        if pinView == nil {
+            pinView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
+            pinView?.canShowCallout = true
+            pinView?.tintColor = UIColor.black
+            
+            let button = UIButton(type: UIButton.ButtonType.detailDisclosure)
+            pinView?.rightCalloutAccessoryView = button
+        } else {
+            pinView?.annotation = annotation
+        }
+        
+        return pinView
+    }
+    
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        if selectedTitle != ""{
+            let requestLocation = CLLocation(latitude: anotationLatitude, longitude: anotationLongitude)
+            
+            CLGeocoder().reverseGeocodeLocation(requestLocation) { placemarks, error in
+                if let placemark = placemarks{
+                    if placemark.count > 0 {
+                        let newPlaceMark = MKPlacemark(placemark: placemark[0])
+                        let item = MKMapItem(placemark: newPlaceMark)
+                        item.name = self.anotationTitle
+                        let launchOptions = [MKLaunchOptionsDirectionsModeKey:MKLaunchOptionsDirectionsModeDriving]
+                        item.openInMaps(launchOptions: launchOptions)
+                    }
+                }
+                
+                
+            }
+        }
+    }
+    
 
     @IBAction func saveButtonTapped(_ sender: Any) {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -94,6 +192,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
             print("error")
         }
         
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "newPlace"), object: nil)
+        navigationController?.popViewController(animated: true)
         
     }
     
